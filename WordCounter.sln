@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCounterLibrary", "WordCounterLibrary\WordCounterLibrary.csproj", "{33F6642A-0280-48DB-8952-65C0620EF311}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WordCounterLibraryTest", "WordCounterLibraryTest\WordCounterLibraryTest.csproj", "{02811E81-F747-411D-B74E-EF73C442D2EC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{33F6642A-0280-48DB-8952-65C0620EF311}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33F6642A-0280-48DB-8952-65C0620EF311}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33F6642A-0280-48DB-8952-65C0620EF311}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33F6642A-0280-48DB-8952-65C0620EF311}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02811E81-F747-411D-B74E-EF73C442D2EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02811E81-F747-411D-B74E-EF73C442D2EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02811E81-F747-411D-B74E-EF73C442D2EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02811E81-F747-411D-B74E-EF73C442D2EC}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {558B3579-3A57-4FE4-9C17-1618E3A73F07}
+	EndGlobalSection
+EndGlobal
