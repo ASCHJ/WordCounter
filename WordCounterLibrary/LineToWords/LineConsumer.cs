@@ -1,20 +1,24 @@
 ﻿using Microsoft.Extensions.Logging;
 using shortid;
+using WordCounterLibrary.Format;
+using WordCounterLibrary.Repository;
 
 namespace WordCounterLibrary.LineToWords
 {
-  internal class LineConsumer
+  internal class LineConsumer : ILineConsumer
   {
     private readonly ILogger<LineConsumer> _logger;
     private readonly string _consumerId;
     private readonly IBufferReader _reader;
-    private readonly IWordStorage _wordStorage;
+    private readonly ILineFormatParser _lineFormatParser;
+    private readonly IWordRepository _wordStorage;
 
-    public LineConsumer(ILogger<LineConsumer> logger, IBufferReader reader, IWordStorage wordStorage)
+    public LineConsumer(ILogger<LineConsumer> logger, IBufferReader reader, ILineFormatParser lineFormatParser, IWordRepository wordStorage)
     {
       _logger = logger;
       _consumerId = ShortId.Generate();
       _reader = reader ?? throw new ArgumentNullException(nameof(reader));
+      _lineFormatParser = lineFormatParser ?? throw new ArgumentNullException(nameof(lineFormatParser));
       _wordStorage = wordStorage ?? throw new ArgumentNullException(nameof(wordStorage));
     }
 
@@ -24,10 +28,13 @@ namespace WordCounterLibrary.LineToWords
 
       try
       {
-        await foreach (var line in _reader.ReadAllAsync(cancellationToken).ConfigureAwait(false))
+        await foreach (var line in _reader.ReadAllAsync(cancellationToken))
         {
-          _logger.LogDebug("Consumer '{ConsumerId}' consuming '{line}'", _consumerId, line);
-          _wordStorage.AddOrUpdate(line, 1);
+          var wordKeyPairs = _lineFormatParser.GetWordKeyPairs(line);
+          foreach (var wordKeyPair in wordKeyPairs)
+          {
+            _wordStorage.AddOrUpdate(wordKeyPair.Key, wordKeyPair.Value);
+          }
         }
       }
       catch (OperationCanceledException)

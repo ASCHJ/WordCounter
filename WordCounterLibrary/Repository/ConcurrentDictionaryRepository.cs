@@ -1,42 +1,44 @@
 ﻿using Microsoft.Extensions.Logging;
 using System.Collections.Concurrent;
-using WordCounterLibrary.Helpers;
 
-namespace WordCounterLibrary.LineToWords
+namespace WordCounterLibrary.Repository
 {
-  public class MemoryStorage : IWordStorage
+  public class ConcurrentDictionaryRepository : IWordRepository
   {
-    private const int AddOrUpdateRetries = 3;
+    private const int _addOrUpdateRetries = 3;
 
-    private readonly ConcurrentDictionary<string, int> wordStorage = new();
-    private readonly ILogger<MemoryStorage> _logger;
-    private readonly IExecutor _executor;
+    private readonly ConcurrentDictionary<string, int> _wordStorage = new(StringComparer.OrdinalIgnoreCase);
+    private readonly ILogger<ConcurrentDictionaryRepository> _logger;
 
-    public MemoryStorage(ILogger<MemoryStorage> logger) : this(logger, new Executor(logger))
-    {
-    }
-
-    public MemoryStorage(ILogger<MemoryStorage> logger, IExecutor executor)
+    public ConcurrentDictionaryRepository(ILogger<ConcurrentDictionaryRepository> logger)
     {
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-      _executor = executor ?? throw new ArgumentNullException(nameof(executor));
     }
 
-    public int WordCount => WordCounter();
-
-    private int WordCounter() //TODO: tempory method?
-    {
-      return wordStorage.Values.Sum();
-    }
+    public int Count => _wordStorage.Count;
 
     public void AddOrUpdate(string word, int wordCount)
     {
-      _executor.Retries(() => RetrieveAndUpdateOrAdd(word, wordCount), AddOrUpdateRetries);
+      int attempt = 1;
+      while (attempt <= _addOrUpdateRetries)
+      {
+        bool methodResult = RetrieveAndUpdateOrAdd(word, wordCount);
+
+        if (methodResult)
+        {
+          return;
+        }
+        _logger.LogDebug("Attempt {attempt} failed. Retrying...", attempt);
+        attempt++;
+      }
+
+      _logger.LogError("Error after {attempt} tries.", attempt - 1);
+      throw new Exception($"Error after {attempt - 1} tries"); //TODO handler better
     }
 
-    public KeyValuePair<string, int>[] Snapshot()
+    public KeyValuePair<string, int> ElementAtOrDefault(int index)
     {
-      return wordStorage.ToArray();
+      return _wordStorage.ElementAtOrDefault(index);
     }
 
     /// <summary>
@@ -45,10 +47,10 @@ namespace WordCounterLibrary.LineToWords
     /// </summary>
     private bool RetrieveAndUpdateOrAdd(string word, int wordCount)
     {
-      if (wordStorage.TryGetValue(word, out int retrievedValue))
+      if (_wordStorage.TryGetValue(word, out int retrievedValue))
       {
         var count = retrievedValue + wordCount;
-        if (wordStorage.TryUpdate(word, count, retrievedValue))
+        if (_wordStorage.TryUpdate(word, count, retrievedValue))
         {
           _logger.LogDebug("Updated {word} count to {count}", word, count);
           return true;
@@ -62,7 +64,7 @@ namespace WordCounterLibrary.LineToWords
       else
       {
         var count = wordCount;
-        if (wordStorage.TryAdd(word, count))
+        if (_wordStorage.TryAdd(word.ToUpper(), count))
         {
           _logger.LogDebug("Added {word} with count {newValue}", word, count);
           return true;

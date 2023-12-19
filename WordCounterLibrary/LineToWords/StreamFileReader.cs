@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using System.Text;
-using WordCounterLibrary.Format;
 
 namespace WordCounterLibrary.LineToWords
 {
@@ -9,18 +7,17 @@ namespace WordCounterLibrary.LineToWords
     private const int BufferSize = 4096;
 
     private readonly ILogger<StreamFileReader> _logger;
+    private readonly IBufferWriter _bufferWriter;
 
-    private readonly IWordStorage _wordStorage;
-    private readonly ILineFormatParser _lineFormatParser;
-
-    public StreamFileReader(ILogger<StreamFileReader> logger, IWordStorage wordStorage, ILineFormatParser lineFormatParser)
+    public StreamFileReader(ILogger<StreamFileReader> logger, IBufferStorage bufferStorage)
     {
+      if (bufferStorage is null) { throw new ArgumentNullException(nameof(bufferStorage)); }
+
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-      _wordStorage = wordStorage ?? throw new ArgumentNullException(nameof(wordStorage));
-      _lineFormatParser = lineFormatParser ?? throw new ArgumentNullException(nameof(lineFormatParser));
+      _bufferWriter = bufferStorage.Writer;
     }
 
-    public async Task ReadFile(string filePath)
+    public async Task WriteFileContentToBufferAsync(string filePath)
     {
       try
       {
@@ -30,18 +27,39 @@ namespace WordCounterLibrary.LineToWords
         string? line = null;
         while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) != null)
         {
-          var words = _lineFormatParser.GetWords(line);
-          foreach (var word in words)
-          {
-            _wordStorage.AddOrUpdate(word, 1);
-          }
+          await _bufferWriter.WriteAsync(line, CancellationToken.None);
         }
       }
       catch (Exception ex)
       {
-        _logger.LogError(ex, $"Error reading file: {filePath}");
-        throw; // TODO: do more?
+        var message = $"Error reading file: {filePath}";
+        _logger.LogError(ex, message);
+        throw;
       }
+    }
+
+    public async Task<IReadOnlyList<string>> ReadFileContent(string filePath)
+    {
+      var lines = new List<string>();
+      try
+      {
+        using FileStream sourceStream = new(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: BufferSize, useAsync: true);
+        using StreamReader reader = new(sourceStream);
+
+        string? line = null;
+        while ((line = await reader.ReadLineAsync().ConfigureAwait(false)) != null)
+        {
+          lines.Add(line);
+        }
+      }
+      catch (Exception ex)
+      {
+        var message = $"Error reading file: {filePath}";
+        _logger.LogError(ex, message);
+        throw;
+      }
+
+      return lines;
     }
   }
 }

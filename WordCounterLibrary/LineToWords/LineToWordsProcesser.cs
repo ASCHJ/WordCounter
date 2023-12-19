@@ -1,36 +1,23 @@
 ﻿using Microsoft.Extensions.Logging;
-using WordCounterLibrary.Format;
+using WordCounterLibrary.Services;
 
 namespace WordCounterLibrary.LineToWords
 {
-  public class LineToWordsProcessor
+  public class LineToWordsProcessor : IWordsProcessor
   {
     private static readonly int BufferCapacity = 500;
 
-    private readonly ILoggerFactory _loggerFactory;
-
     private readonly ILogger<LineToWordsProcessor> _lineToWordsProcessorLogger;
-    private readonly ILogger<LineConsumer> _lineConsumerLogger;
-    private readonly ILogger<LineFileProducer> _lineFileProducerLogger;
-    private readonly IFileReader _fileReader;
     private readonly IBufferStorage _internalStorage;
-    private readonly IWordStorage _wordStorage;
+    private readonly ILineFileProducerService _lineFileProducerCreator;
+    private readonly ILineConsumerService _consumerCreator;
 
-    public LineToWordsProcessor(ILoggerFactory loggerFactory, IWordStorage wordStorage)
-        : this(loggerFactory, new StreamFileReader(loggerFactory.CreateLogger<StreamFileReader>(), wordStorage, new LipsumLineFormatParser()), wordStorage, new ChannelAsBuffer(BufferCapacity))
+    internal LineToWordsProcessor(ILogger<LineToWordsProcessor> logger, IBufferStorage internalStorage, ILineFileProducerService lineFileProducerCreator, ILineConsumerService consumerCreator)
     {
-    }
-
-    internal LineToWordsProcessor(ILoggerFactory loggerFactory, IFileReader fileReader, IWordStorage wordStorage, IBufferStorage internalStorage)
-    {
-      _loggerFactory = loggerFactory ?? throw new ArgumentNullException(nameof(loggerFactory)); //TODO: Do I want a IoC dependency. 
-
-      _lineToWordsProcessorLogger = _loggerFactory.CreateLogger<LineToWordsProcessor>();
-      _lineConsumerLogger = _loggerFactory.CreateLogger<LineConsumer>();
-      _lineFileProducerLogger = _loggerFactory.CreateLogger<LineFileProducer>();
-      _fileReader = fileReader ?? throw new ArgumentNullException(nameof(fileReader));
+      _lineToWordsProcessorLogger = logger;
       _internalStorage = internalStorage ?? throw new ArgumentNullException(nameof(internalStorage));
-      _wordStorage = wordStorage ?? throw new ArgumentNullException(nameof(wordStorage));
+      _lineFileProducerCreator = lineFileProducerCreator ?? throw new ArgumentNullException(nameof(lineFileProducerCreator));
+      _consumerCreator = consumerCreator ?? throw new ArgumentNullException(nameof(consumerCreator));
     }
 
     public async Task Execute(int producersCount, int consumersCount, IEnumerable<string> filePaths, CancellationToken cancellationToken)
@@ -69,8 +56,8 @@ namespace WordCounterLibrary.LineToWords
       var distributedPaths = DistributeElements(producersCount, filePaths);
       var producerTasks = distributedPaths.Select(filePaths =>
       {
-        var lineFileProducer = new LineFileProducer(_lineFileProducerLogger, _wordStorage, _fileReader, filePaths) //TODO: Fix
-            .ProduceAsync(cancellationToken);
+        var lineFileProducer = _lineFileProducerCreator.Creator()
+            .ProduceAsync(filePaths, cancellationToken);
 
         return lineFileProducer;
       }).ToArray();
@@ -81,7 +68,7 @@ namespace WordCounterLibrary.LineToWords
     private Task[] ConsumerTasks(int consumersCount, CancellationToken cancellationToken)
     {
       var consumerTasks = Enumerable.Range(1, consumersCount)
-          .Select(i => new LineConsumer(_lineConsumerLogger, _internalStorage.Reader, _wordStorage) //TODO: Fix
+          .Select(i => _consumerCreator.Creator()
               .ConsumeAsync(cancellationToken))
           .ToArray();
 

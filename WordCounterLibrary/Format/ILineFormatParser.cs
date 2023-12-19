@@ -2,6 +2,6 @@
 {
   internal interface ILineFormatParser
   {
-    string[] GetWords(string inputString);
+    IEnumerable<KeyValuePair<string, int>> GetWordKeyPairs(string line);
   }
 }
