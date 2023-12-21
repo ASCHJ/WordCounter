@@ -52,7 +52,7 @@ namespace WordCounterLibrary.LineToWords
 
     private Task[] ProducerTasks(IEnumerable<string> filePaths, int producersCount, CancellationToken cancellationToken)
     {
-      //TODO: check if producers > filepaths
+      //TODO check if producers > filepaths
       var distributedPaths = DistributeElements(producersCount, filePaths);
       var producerTasks = distributedPaths.Select(filePaths =>
       {
@@ -75,7 +75,7 @@ namespace WordCounterLibrary.LineToWords
       return consumerTasks;
     }
 
-    private static IEnumerable<string>[] DistributeElements(int producersCount, IEnumerable<string> filePaths) //TODO: move to helper class?
+    private static IEnumerable<string>[] DistributeElements(int producersCount, IEnumerable<string> filePaths)
     {
       List<string>[] distributedElements = new List<string>[producersCount];
       for (int i = 0; i < producersCount; i++)

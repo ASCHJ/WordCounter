@@ -21,6 +21,8 @@ namespace WordCounterLibrary.WordsWriter
 
     public void Add(string word, int index)
     {
+      if (string.IsNullOrEmpty(word)) { throw new ArgumentException($"'{nameof(word)}' cannot be null or empty.", nameof(word)); }
+
       char characterUpper = char.ToUpper(word[0]);
       if (_indexCards.TryGetValue(characterUpper, out var indexList))
       {

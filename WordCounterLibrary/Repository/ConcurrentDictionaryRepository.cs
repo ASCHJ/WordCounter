@@ -33,7 +33,7 @@ namespace WordCounterLibrary.Repository
       }
 
       _logger.LogError("Error after {attempt} tries.", attempt - 1);
-      throw new Exception($"Error after {attempt - 1} tries"); //TODO handler better
+      throw new Exception($"Error after {attempt - 1} tries"); //TODO handler better - custom exception
     }
 
     public KeyValuePair<string, int> ElementAtOrDefault(int index)

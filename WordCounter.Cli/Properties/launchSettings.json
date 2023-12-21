@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "WordCounter.Cli": {
-      "commandName": "Project",
-      "commandLineArgs": "--directory \"D:\\WordCounter\\Data\""
-    }
-  }
-}

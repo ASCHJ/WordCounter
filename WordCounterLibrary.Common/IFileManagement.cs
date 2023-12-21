@@ -1,6 +1,6 @@
-﻿namespace WordCounterLibrary.Helpers
+﻿namespace WordCounterLibrary.Common
 {
-  internal interface IIOHelper
+  public interface IFileManagement
   {
     bool Exists(string filePath);
     string CurrentDirectory { get; }

@@ -29,7 +29,7 @@ namespace WordCounterLibraryTest
     }
 
     [Fact]
-    public async Task StartAsync_WhenFilesInDirectory_ThenProcessFiles() //TODO inject logic for getting files in WordCounter class
+    public async Task StartAsync_WhenFilesInDirectory_ThenProcessFiles() //TODO Will be fix when WordCounter is fixed
     {
       // Arrange
       var loggerMock = Substitute.For<ILogger<WordCounter>>();

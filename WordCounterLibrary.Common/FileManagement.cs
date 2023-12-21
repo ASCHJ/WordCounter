@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 
-namespace WordCounterLibrary.Helpers
+namespace WordCounterLibrary.Common
 {
-  internal class IOHelper : IIOHelper
+  public class FileManagement : IFileManagement
   {
     public string CurrentDirectory => GetCurrentDirectory();
 

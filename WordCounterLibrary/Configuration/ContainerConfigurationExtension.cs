@@ -32,7 +32,7 @@ namespace WordCounterLibrary.Configuration
     internal static ContainerBuilder ConfigureIO(this ContainerBuilder builder)
     {
       builder.RegisterType<StreamFileReader>().As<IFileReader>();
-      builder.RegisterType<IOHelper>().As<IIOHelper>();
+      builder.RegisterType<IOManager>().As<IIOManager>();
 
       return builder;
     }

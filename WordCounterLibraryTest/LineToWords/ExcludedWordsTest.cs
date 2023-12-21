@@ -25,10 +25,10 @@ namespace WordCounterLibraryTest.LineToWords
       var fileExists = true;
 
       var fileReader = Substitute.For<IFileReader>();
-      var ioHelper = Substitute.For<IIOHelper>();
-      ioHelper.Exists(Arg.Any<string>()).Returns(fileExists);
+      var iOManager = Substitute.For<IIOManager>();
+      iOManager.Exists(Arg.Any<string>()).Returns(fileExists);
 
-      var excludedWords = new ExcludedWords(Logger, fileReader, ioHelper);
+      var excludedWords = new ExcludedWords(Logger, fileReader, iOManager);
 
       fileReader.ReadFileContent(Arg.Any<string>()).Returns(await Task.FromResult(new List<string> { expectedExcludeWord }));
 
@@ -47,10 +47,10 @@ namespace WordCounterLibraryTest.LineToWords
       var fileExists = false;
 
       var fileReader = Substitute.For<IFileReader>();
-      var ioHelper = Substitute.For<IIOHelper>();
-      ioHelper.Exists(Arg.Any<string>()).Returns(fileExists);
+      var iOManager = Substitute.For<IIOManager>();
+      iOManager.Exists(Arg.Any<string>()).Returns(fileExists);
 
-      var excludedWords = new ExcludedWords(Logger, fileReader, ioHelper);
+      var excludedWords = new ExcludedWords(Logger, fileReader, iOManager);
 
       // Act
       await excludedWords.ReadExcludedWords("");
@@ -66,9 +66,9 @@ namespace WordCounterLibraryTest.LineToWords
       // Arrange
       var excludedWord = "excludedWord";
       var fileReader = Substitute.For<IFileReader>();
-      var ioHelper = Substitute.For<IIOHelper>();
-      ioHelper.Exists(Arg.Any<string>()).Returns(true);
-      var excludedWords = new ExcludedWords(Logger, fileReader, ioHelper);
+      var iOManager = Substitute.For<IIOManager>();
+      iOManager.Exists(Arg.Any<string>()).Returns(true);
+      var excludedWords = new ExcludedWords(Logger, fileReader, iOManager);
 
       fileReader.ReadFileContent(Arg.Any<string>()).Returns(await Task.FromResult(new List<string> { excludedWord }));
 
@@ -85,9 +85,9 @@ namespace WordCounterLibraryTest.LineToWords
     {
       // Arrange
       var fileReader = Substitute.For<IFileReader>();
-      var ioHelper = Substitute.For<IIOHelper>();
-      ioHelper.Exists(Arg.Any<string>()).Returns(true);
-      var excludedWords = new ExcludedWords(Logger, fileReader, ioHelper);
+      var iOManager = Substitute.For<IIOManager>();
+      iOManager.Exists(Arg.Any<string>()).Returns(true);
+      var excludedWords = new ExcludedWords(Logger, fileReader, iOManager);
 
       fileReader.ReadFileContent(Arg.Any<string>()).Returns(await Task.FromResult(new List<string>()));
 

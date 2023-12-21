@@ -29,7 +29,7 @@ namespace WordCounterLibrary
       containerBuilder.ConfigureFormat();
       containerBuilder.ConfigureIO();
 
-      var configuration = new LoggerConfiguration()//TODO configure by configuration file
+      var configuration = new LoggerConfiguration() //TODO configure by configuration file
      .Enrich.FromLogContext()
      .MinimumLevel.Information()
      .WriteTo.Console();
@@ -39,9 +39,9 @@ namespace WordCounterLibrary
 
       _logger = _container.Resolve<ILogger<WordCounter>>();
       var excludedWords = _container.Resolve<IExcludedWords>();
-      var IoHelper = _container.Resolve<IIOHelper>();
+      var iOManager = _container.Resolve<IIOManager>();
 
-      var folderWithExcludFile = Path.Combine(IoHelper.CurrentDirectory, "");
+      var folderWithExcludFile = Path.Combine(iOManager.CurrentDirectory, "");
       excludedWords.ReadExcludedWords(folderWithExcludFile);
 
       _lineManager = _container.Resolve<IWordsProcessor>();
@@ -65,7 +65,7 @@ namespace WordCounterLibrary
       }
     }
 
-    private static string[] GetFilesInDirectory(string directoryPath)//TODO: Throws exceptions and so on
+    private static string[] GetFilesInDirectory(string directoryPath) //TODO: Don't use directly - also handle throws exceptions
     {
       if (Directory.Exists(directoryPath))
       {
@@ -74,8 +74,7 @@ namespace WordCounterLibrary
       else
       {
         return Array.Empty<string>();
-      }
-      
+      }  
     }
 
     public void Dispose()
