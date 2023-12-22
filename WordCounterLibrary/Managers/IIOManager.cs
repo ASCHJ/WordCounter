@@ -1,4 +1,4 @@
-﻿namespace WordCounterLibrary.Helpers
+﻿namespace WordCounterLibrary.Managers
 {
   internal interface IIOManager
   {

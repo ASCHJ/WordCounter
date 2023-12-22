@@ -1,5 +1,4 @@
-﻿using WordCounterLibrary.LineToWords;
-using WordCounterLibrary.Repository;
+﻿using WordCounterLibrary.Repository;
 
 namespace WordCounterLibrary.WordsWriter
 {
@@ -7,11 +6,11 @@ namespace WordCounterLibrary.WordsWriter
   {
     private readonly IWordRepository _wordRepository;
     private readonly IArchiver _archiver;
-    private readonly IExcludedWords _excludedWords;
+    private readonly IExcludedWordsRepository _excludedWords;
     private readonly IIndexCards _indexCards;
     private readonly IAlphabet alphabet;
 
-    public FileReporter(IWordRepository wordRepository, IArchiver archiver, IExcludedWords excludedWords, IIndexCards indexCards, IAlphabet alphabet)
+    public FileReporter(IWordRepository wordRepository, IArchiver archiver, IExcludedWordsRepository excludedWords, IIndexCards indexCards, IAlphabet alphabet)
     {
       _wordRepository = wordRepository ?? throw new ArgumentNullException(nameof(wordRepository));
       _archiver = archiver ?? throw new ArgumentNullException(nameof(archiver));

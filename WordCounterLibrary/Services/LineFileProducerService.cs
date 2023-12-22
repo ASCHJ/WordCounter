@@ -7,20 +7,20 @@ namespace WordCounterLibrary.Services
   {
     private readonly ILogger<LineFileProducer> _logger;
     private readonly IBufferWriter _bufferWriter;
-    private readonly IFileReader _fileReader;
+    private readonly IFileReaderService _fileReaderService;
 
-    public LineFileProducerService(ILogger<LineFileProducer> logger, IBufferStorage bufferStorage, IFileReader fileReader)
+    public LineFileProducerService(ILogger<LineFileProducer> logger, IBufferStorage bufferStorage, IFileReaderService fileReaderService)
     {
       if (bufferStorage is null) { throw new ArgumentNullException(nameof(bufferStorage)); }
 
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
       _bufferWriter = bufferStorage.Writer ?? throw new ArgumentNullException(nameof(bufferStorage.Writer));
-      _fileReader = fileReader ?? throw new ArgumentNullException(nameof(fileReader));
+      _fileReaderService = fileReaderService ?? throw new ArgumentNullException(nameof(fileReaderService));
     }
 
     public ILineFileProducer Creator()
     {
-      return new LineFileProducer(_logger, _bufferWriter, _fileReader);
+      return new LineFileProducer(_logger, _bufferWriter, _fileReaderService);
     }
   }
 }

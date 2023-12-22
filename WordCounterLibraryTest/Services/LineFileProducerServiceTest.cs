@@ -16,12 +16,12 @@ namespace WordCounterLibraryTest.Services
     {
       // Arrange
       var bufferStorageMock = Substitute.For<IBufferStorage>();
-      var reader = Substitute.For<IFileReader>();
+      var fileReaderService = Substitute.For<IFileReaderService>();
 
       var lineConsumerService = new LineFileProducerService(
           _logger,
           bufferStorageMock,
-          reader
+          fileReaderService
       );
 
       // Act
@@ -37,20 +37,20 @@ namespace WordCounterLibraryTest.Services
     {
       // Arrange
       var bufferStorageMock = Substitute.For<IBufferStorage>();
-      var readerMock = Substitute.For<IFileReader>();
+      var fileReaderService = Substitute.For<IFileReaderService>();
 
       // Act & Assert
-      Assert.Throws<ArgumentNullException>(() => new LineFileProducerService(null!, bufferStorageMock, readerMock));
+      Assert.Throws<ArgumentNullException>(() => new LineFileProducerService(null!, bufferStorageMock, fileReaderService));
     }
 
     [Fact]
     public void Constructor_WhenBufferStorageIsNull_ThenThrowsArgumentNullException()
     {
       // Arrange
-      var readerMock = Substitute.For<IFileReader>();
+      var fileReaderServiceMock = Substitute.For<IFileReaderService>();
 
       // Act & Assert
-      Assert.Throws<ArgumentNullException>(() => new LineFileProducerService(_logger, null!, readerMock));
+      Assert.Throws<ArgumentNullException>(() => new LineFileProducerService(_logger, null!, fileReaderServiceMock));
     }
 
     [Fact]

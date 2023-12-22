@@ -1,5 +1,4 @@
 ﻿using NSubstitute;
-using WordCounterLibrary.LineToWords;
 using WordCounterLibrary.Repository;
 using WordCounterLibrary.WordsWriter;
 using Xunit;
@@ -14,7 +13,7 @@ namespace WordCounterLibraryTest.WordsWriter
       // Arrange
       IWordRepository wordRepository = null!;
       var archiverMock = Substitute.For<IArchiver>();
-      var excludedWordsMock = Substitute.For<IExcludedWords>();
+      var excludedWordsMock = Substitute.For<IExcludedWordsRepository>();
       var indexCardsMock = Substitute.For<IIndexCards>();
       var alphabetMock = Substitute.For<IAlphabet>();
 
@@ -29,7 +28,7 @@ namespace WordCounterLibraryTest.WordsWriter
       // Arrange
       var wordRepository = Substitute.For<IWordRepository>();
       IArchiver archiverMock = null!;
-      var excludedWordsMock = Substitute.For<IExcludedWords>();
+      var excludedWordsMock = Substitute.For<IExcludedWordsRepository>();
       var indexCardsMock = Substitute.For<IIndexCards>();
       var alphabetMock = Substitute.For<IAlphabet>();
 
@@ -44,7 +43,7 @@ namespace WordCounterLibraryTest.WordsWriter
       // Arrange
       var wordRepository = Substitute.For<IWordRepository>();
       var archiverMock = Substitute.For<IArchiver>();
-      IExcludedWords excludedWordsMock = null!;
+      IExcludedWordsRepository excludedWordsMock = null!;
       var indexCardsMock = Substitute.For<IIndexCards>();
       var alphabetMock = Substitute.For<IAlphabet>();
 
@@ -59,7 +58,7 @@ namespace WordCounterLibraryTest.WordsWriter
       // Arrange
       var wordRepository = Substitute.For<IWordRepository>();
       var archiverMock = Substitute.For<IArchiver>();
-      var excludedWordsMock = Substitute.For<IExcludedWords>();
+      var excludedWordsMock = Substitute.For<IExcludedWordsRepository>();
       IIndexCards indexCardsMock = null!;
       var alphabetMock = Substitute.For<IAlphabet>();
 
@@ -74,7 +73,7 @@ namespace WordCounterLibraryTest.WordsWriter
       // Arrange
       var wordRepository = Substitute.For<IWordRepository>();
       var archiverMock = Substitute.For<IArchiver>();
-      var excludedWordsMock = Substitute.For<IExcludedWords>();
+      var excludedWordsMock = Substitute.For<IExcludedWordsRepository>();
       var indexCardsMock = Substitute.For<IIndexCards>();
       IAlphabet alphabetMock = null!;
 
@@ -90,7 +89,7 @@ namespace WordCounterLibraryTest.WordsWriter
       var alphabet = new List<char> { 'a', 'b', 'c' };
       var wordRepositoryMock = Substitute.For<IWordRepository>();
       var archiverMock = Substitute.For<IArchiver>();
-      var excludedWordsMock = Substitute.For<IExcludedWords>();
+      var excludedWordsMock = Substitute.For<IExcludedWordsRepository>();
       var indexCardsMock = Substitute.For<IIndexCards>();
       var alphabetMock = Substitute.For<IAlphabet>();
       alphabetMock.Get().Returns(alphabet);
@@ -112,7 +111,7 @@ namespace WordCounterLibraryTest.WordsWriter
       var alphabet = new List<char> { 'a', 'b', 'c' };
       var wordRepositoryMock = Substitute.For<IWordRepository>();
       var archiverMock = Substitute.For<IArchiver>();
-      var excludedWordsMock = Substitute.For<IExcludedWords>();
+      var excludedWordsMock = Substitute.For<IExcludedWordsRepository>();
       var indexCardsMock = Substitute.For<IIndexCards>();
       var alphabetMock = Substitute.For<IAlphabet>();
       alphabetMock.Get().Returns(alphabet);
@@ -133,7 +132,7 @@ namespace WordCounterLibraryTest.WordsWriter
       var alphabet = new List<char> { 'a', 'b', 'c' };
       var wordRepositoryMock = Substitute.For<IWordRepository>();
       var archiverMock = Substitute.For<IArchiver>();
-      var excludedWordsMock = Substitute.For<IExcludedWords>();
+      var excludedWordsMock = Substitute.For<IExcludedWordsRepository>();
       var indexCardsMock = Substitute.For<IIndexCards>();
       var alphabetMock = Substitute.For<IAlphabet>();
       alphabetMock.Get().Returns(alphabet);

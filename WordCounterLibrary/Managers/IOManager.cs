@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace WordCounterLibrary.Helpers
+namespace WordCounterLibrary.Managers
 {
   internal class IOManager : IIOManager
   {

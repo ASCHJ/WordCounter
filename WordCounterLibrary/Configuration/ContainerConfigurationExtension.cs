@@ -2,8 +2,9 @@
 using Serilog;
 using Serilog.Extensions.Autofac.DependencyInjection;
 using WordCounterLibrary.Format;
-using WordCounterLibrary.Helpers;
+using WordCounterLibrary.IO;
 using WordCounterLibrary.LineToWords;
+using WordCounterLibrary.Managers;
 using WordCounterLibrary.Repository;
 using WordCounterLibrary.Services;
 using WordCounterLibrary.WordsWriter;
@@ -14,8 +15,9 @@ namespace WordCounterLibrary.Configuration
   {
     internal static ContainerBuilder ConfigureDependencies(this ContainerBuilder builder)
     {
+      builder.RegisterType<ExcludeManager>().As<IExcludeManager>();
       builder.RegisterType<IndexCards>().As<IIndexCards>().SingleInstance();
-      builder.RegisterType<ExcludedWords>().As<IExcludedWords>().SingleInstance();
+      builder.RegisterType<ExcludedWordsRepository>().As<IExcludedWordsRepository>().SingleInstance();
       builder.RegisterType<LineConsumerService>().As<ILineConsumerService>();
       builder.RegisterType<LineFileProducerService>().As<ILineFileProducerService>();
       builder.RegisterType<ChannelAsBuffer>().As<IBufferStorage>().SingleInstance();
@@ -31,9 +33,10 @@ namespace WordCounterLibrary.Configuration
 
     internal static ContainerBuilder ConfigureIO(this ContainerBuilder builder)
     {
-      builder.RegisterType<StreamFileReader>().As<IFileReader>();
+      builder.RegisterType<FileReaderService>().As<IFileReaderService>();
       builder.RegisterType<IOManager>().As<IIOManager>();
-
+      builder.RegisterType<StreamFileWriter>().As<IFileWriter>();
+      
       return builder;
     }
 

@@ -2,8 +2,9 @@
 using Microsoft.Extensions.Logging;
 using Serilog;
 using WordCounterLibrary.Configuration;
-using WordCounterLibrary.Helpers;
 using WordCounterLibrary.LineToWords;
+using WordCounterLibrary.Managers;
+using WordCounterLibrary.Repository;
 using WordCounterLibrary.WordsWriter;
 
 namespace WordCounterLibrary
@@ -38,11 +39,12 @@ namespace WordCounterLibrary
       _container = containerBuilder.Build();
 
       _logger = _container.Resolve<ILogger<WordCounter>>();
-      var excludedWords = _container.Resolve<IExcludedWords>();
+      var excludedWords = _container.Resolve<IExcludedWordsRepository>();
       var iOManager = _container.Resolve<IIOManager>();
+      var excludeManager = _container.Resolve<IExcludeManager>();
 
       var folderWithExcludFile = Path.Combine(iOManager.CurrentDirectory, "");
-      excludedWords.ReadExcludedWords(folderWithExcludFile);
+      excludeManager.FillExcludeRepositoryWithExcludeWordsFromFile(folderWithExcludFile);
 
       _lineManager = _container.Resolve<IWordsProcessor>();
       _reporter = _container.Resolve<IReporter>();
