@@ -16,13 +16,15 @@ namespace WordCounterLibrary.WordsWriter
 
     private readonly ILogger<FileArchiver> _logger;
     private readonly IWordRepository _wordRepository;
+    private readonly IFormatFactory _formatFactory;
     private readonly IIOManager _iOManager;
     private readonly IFileWriter _fileWriter;
 
-    public FileArchiver(ILogger<FileArchiver> logger, IWordRepository wordRepository, IIOManager iOManager, IFileWriter fileWriter)
+    public FileArchiver(ILogger<FileArchiver> logger, IWordRepository wordRepository, IFormatFactory formatFactory, IIOManager iOManager, IFileWriter fileWriter)
     {
       _logger = logger ?? throw new ArgumentNullException(nameof(logger));
       _wordRepository = wordRepository ?? throw new ArgumentNullException(nameof(wordRepository));
+      _formatFactory = formatFactory ?? throw new ArgumentNullException(nameof(formatFactory));
       _iOManager = iOManager ?? throw new ArgumentNullException(nameof(iOManager));
       _fileWriter = fileWriter ?? throw new ArgumentNullException(nameof(fileWriter));
     }
@@ -37,24 +39,26 @@ namespace WordCounterLibrary.WordsWriter
         var outputFile = Path.Combine(_iOManager.CurrentDirectory, fileName);
         var id = ShortId.Generate();
 
-        _logger.LogInformation("Archiver '{id}' writting file '{filePathAndName}'", id, outputFile);
+        _logger.LogInformation("Archiver '{id}' writting file '{filePathAndName}'.", id, outputFile);
 
         string content = string.Empty;
         if (entry.Value.Any())
         {
-          var outputFormat = new WordAndCountFormat(); //TODO: factory for selection format (WordAndCountFormat or ReportFormat)
+          var outputFormat = _formatFactory.CreateFormat<WordAndCountFormat>();
           foreach (var wordIndex in entry.Value)
           {
             var (word, count) = _wordRepository.ElementAtOrDefault(wordIndex);
             outputFormat.AppendLine(word, count);
           }
 
-          content = outputFormat.ToString();
-          _fileWriter.Write(outputFile, content);
+          content = outputFormat.GetContent();
+          if(!string.IsNullOrEmpty(content))
+          {
+            _fileWriter.Write(outputFile, content);
+          }
         }
-
         
-        _logger.LogInformation("Archiver '{id}' done writting file '{filePathAndName}'", id, outputFile);
+        _logger.LogInformation("Archiver '{id}' done writting file '{filePathAndName}'.", id, outputFile);
       });
     }
 
@@ -64,18 +68,25 @@ namespace WordCounterLibrary.WordsWriter
 
       var outputFile = Path.Combine(_iOManager.CurrentDirectory, _excludedFilename);
       var id = ShortId.Generate();
-      _logger.LogInformation("Creating excluded report. Writting file '{filePathAndName}'", outputFile);
+      _logger.LogInformation("Creating excluded report.");
 
-      var outputFormat = new ReportFormat(); //TODO: factory for selection format (WordAndCountFormat or ReportFormat)
+      var outputFormat = _formatFactory.CreateFormat<ReportFormat>();
       foreach (var wordIndex in indexCards.GetExcludedIndexCards())
       {
         var (word, count) = _wordRepository.ElementAtOrDefault(wordIndex);
         outputFormat.AppendLine(word, count);
       }
 
-      var content = outputFormat.ToString();
-      _fileWriter.Write(outputFile, content);
-      _logger.LogInformation("Archiver '{id}' done writting excluded report to file '{filePathAndName}'", id, outputFile);
+      var content = outputFormat.GetContent();
+      if(!string.IsNullOrEmpty(content))
+      {
+        _fileWriter.Write(outputFile, content);
+        _logger.LogInformation("Archiver '{id}' done writting excluded report to file '{filePathAndName}'.", id, outputFile);
+      }
+      else
+      {
+        _logger.LogInformation("Archiver '{id}' none excluded report to write, because report content is empty.", id);      }
+      
     }
   }
 }

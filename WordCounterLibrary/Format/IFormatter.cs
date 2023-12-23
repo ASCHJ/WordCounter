@@ -1,8 +1,8 @@
 ﻿namespace WordCounterLibrary.Format
 {
-  internal interface IReportFormat
+  internal interface IFormatter
   {
     void AppendLine(string word, int count);
-    string ToString();
+    string GetContent();
   }
 }

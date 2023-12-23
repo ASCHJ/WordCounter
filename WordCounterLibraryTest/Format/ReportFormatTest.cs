@@ -17,7 +17,7 @@ namespace WordCounterLibraryTest.Format
 
       // Assert
       
-      Assert.Equal(expectedOutput, reportFormat.ToString());
+      Assert.Equal(expectedOutput, reportFormat.GetContent());
     }
 
     [Fact]
@@ -34,7 +34,7 @@ namespace WordCounterLibraryTest.Format
       reportFormat.AppendLine("B", 2);
 
       // Assert
-      Assert.Equal(expectedOutput, reportFormat.ToString());
+      Assert.Equal(expectedOutput, reportFormat.GetContent());
     }
 
     [Fact]
@@ -48,7 +48,7 @@ namespace WordCounterLibraryTest.Format
       reportFormat.AppendLine(line, 1);
 
       // Assert
-      Assert.Empty(reportFormat.ToString());
+      Assert.Empty(reportFormat.GetContent());
     }
   }
 }

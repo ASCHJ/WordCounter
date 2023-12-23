@@ -3,7 +3,7 @@ using System.Text;
 
 namespace WordCounterLibrary.Format
 {
-  internal class WordAndCountFormat : IWordAndCountFormat
+  internal class WordAndCountFormat : IFormatter
   {
     private readonly StringBuilder wordEntryBuilder = new();
 
@@ -14,7 +14,7 @@ namespace WordCounterLibrary.Format
       }
     }
 
-    public override string ToString()
+    public string GetContent()
     {
       return wordEntryBuilder.ToString();
     }

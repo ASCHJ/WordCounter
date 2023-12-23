@@ -16,7 +16,7 @@ namespace WordCounterLibraryTest.Format
       wordAndCountFormat.AppendLine("ABC", 1);
 
       // Assert
-      Assert.Equal(expectedOutput, wordAndCountFormat.ToString());
+      Assert.Equal(expectedOutput, wordAndCountFormat.GetContent());
     }
 
     [Theory]
@@ -35,7 +35,7 @@ namespace WordCounterLibraryTest.Format
       wordAndCountFormat.AppendLine(word, 1);
 
       // Assert
-      Assert.Equal(expectedOutput, wordAndCountFormat.ToString());
+      Assert.Equal(expectedOutput, wordAndCountFormat.GetContent());
     }
 
     [Fact]
@@ -49,7 +49,7 @@ namespace WordCounterLibraryTest.Format
       wordAndCountFormat.AppendLine(word, 1);
       
       // & Assert
-      Assert.Empty(wordAndCountFormat.ToString());
+      Assert.Empty(wordAndCountFormat.GetContent());
     }
   }
 }

@@ -44,8 +44,7 @@ namespace WordCounterLibrary.Configuration
     {
       builder.RegisterType<AsciiUpperCaseAlphabet>().As<IAlphabet>();
       builder.RegisterType<LipsumLineFormatParser>().As<ILineFormatParser>();
-      builder.RegisterType<WordAndCountFormat>().As<IWordAndCountFormat>();
-      builder.RegisterType<ReportFormat>().As<IReportFormat>();
+      builder.RegisterType<FormatFactory>().As<IFormatFactory>();     
 
       return builder;
     }
