@@ -52,13 +52,13 @@ namespace WordCounterLibrary
 
     public async Task StartAsync(string directoryPath, CancellationToken cancellationToken)
     {
-      int producersCount = 4;
-      int consumersCount = 1;
+      ushort producersCount = 4;
+      ushort consumersCount = 1;
 
       string[] filesInDir = GetFilesInDirectory(directoryPath);
       if (filesInDir.Any())
       {
-        await _lineManager.Execute(producersCount, consumersCount, filesInDir, cancellationToken);
+        await _lineManager.ExecuteAsync(producersCount, consumersCount, filesInDir, cancellationToken);
         _reporter.WriteReports();
       }
       else

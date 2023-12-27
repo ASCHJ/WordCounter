@@ -24,19 +24,20 @@ namespace WordCounterLibraryTest
       await wordCounter.StartAsync("ANoneExistingDirectory", default);
 
       // Assert
-      await lineManagerMock.Received(0).Execute(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>());
+      await lineManagerMock.Received(0).ExecuteAsync(Arg.Any<ushort>(), Arg.Any<ushort>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>());
       reporterMock.Received(0).WriteReports();
     }
 
     [Fact]
     public async Task StartAsync_WhenFilesInDirectory_ThenProcessFiles() //TODO Will be fix when WordCounter is fixed
     {
+      Assert.Fail("fix");
       // Arrange
       var loggerMock = Substitute.For<ILogger<WordCounter>>();
       var lineManagerMock = Substitute.For<IWordsProcessor>();
       var reporterMock = Substitute.For<IReporter>();
 
-      lineManagerMock.Execute(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
+      lineManagerMock.ExecuteAsync(Arg.Any<ushort>(), Arg.Any<ushort>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
           .Returns(Task.CompletedTask);
 
       var wordCounter = new WordCounter(loggerMock, lineManagerMock, reporterMock);
@@ -46,7 +47,7 @@ namespace WordCounterLibraryTest
       await wordCounter.StartAsync(pathWithFiles, default);
 
       // Assert
-      await lineManagerMock.Received(1).Execute(Arg.Any<int>(), Arg.Any<int>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>());
+      await lineManagerMock.Received(1).ExecuteAsync(Arg.Any<ushort>(), Arg.Any<ushort>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>());
       reporterMock.Received(1).WriteReports();
     }
   }

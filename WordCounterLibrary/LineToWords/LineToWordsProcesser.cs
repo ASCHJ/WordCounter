@@ -14,14 +14,22 @@ namespace WordCounterLibrary.LineToWords
 
     internal LineToWordsProcessor(ILogger<LineToWordsProcessor> logger, IBufferStorage internalStorage, ILineFileProducerService lineFileProducerCreator, ILineConsumerService consumerCreator)
     {
-      _lineToWordsProcessorLogger = logger;
+      _lineToWordsProcessorLogger = logger ?? throw new ArgumentNullException(nameof(logger));
       _internalStorage = internalStorage ?? throw new ArgumentNullException(nameof(internalStorage));
       _lineFileProducerCreator = lineFileProducerCreator ?? throw new ArgumentNullException(nameof(lineFileProducerCreator));
       _consumerCreator = consumerCreator ?? throw new ArgumentNullException(nameof(consumerCreator));
     }
 
-    public async Task Execute(int producersCount, int consumersCount, IEnumerable<string> filePaths, CancellationToken cancellationToken)
+    public async Task<ExecutionStatus> ExecuteAsync(ushort producersCount, ushort consumersCount, IEnumerable<string> filePaths, CancellationToken cancellationToken)
     {
+      if (filePaths is null)  { throw new ArgumentNullException(nameof(filePaths)); }
+      if(producersCount == 0 || consumersCount == 0 || !filePaths.Any())
+      {
+        _lineToWordsProcessorLogger.LogInformation("No job to execute. Producers count is {producersCount}, {consumersCount} and files {fileCount}", producersCount, consumersCount, filePaths.Count());
+
+        return ExecutionStatus.WrongArgumentCombination;
+      }
+
       _lineToWordsProcessorLogger.LogInformation(
           "Starting to execute {producersCount} producers, {consumersCount} consumers, files {fileCount}, buffer capacity {bufferCapacity}",
           producersCount, consumersCount, filePaths.Count(), BufferCapacity);
@@ -33,6 +41,8 @@ namespace WordCounterLibrary.LineToWords
       await Task.WhenAll(tasks);
 
       _lineToWordsProcessorLogger.LogInformation("Done producing and consuming");
+
+      return ExecutionStatus.ExecutionCompleted;
     }
 
     private async Task ProduceAsync(IEnumerable<string> filePaths, int producersCount, CancellationToken cancellationToken)
@@ -52,7 +62,8 @@ namespace WordCounterLibrary.LineToWords
 
     private Task[] ProducerTasks(IEnumerable<string> filePaths, int producersCount, CancellationToken cancellationToken)
     {
-      //TODO check if producers > filepaths
+      CorrectForMaximumProducers(filePaths, producersCount);
+
       var distributedPaths = DistributeElements(producersCount, filePaths);
       var producerTasks = distributedPaths.Select(filePaths =>
       {
@@ -91,6 +102,14 @@ namespace WordCounterLibrary.LineToWords
       }
 
       return distributedElements;
+    }
+
+    private static void CorrectForMaximumProducers(IEnumerable<string> filePaths, int producersCount)
+    {
+      if (filePaths.Count() > producersCount)
+      {
+        producersCount = filePaths.Count();
+      }
     }
   }
 }
