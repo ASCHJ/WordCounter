@@ -2,8 +2,8 @@
 using NSubstitute;
 using WordCounterLibrary;
 using WordCounterLibrary.LineToWords;
+using WordCounterLibrary.Managers;
 using WordCounterLibrary.WordsWriter;
-using WordCounterLibraryTest.TestHelpers;
 using Xunit;
 
 namespace WordCounterLibraryTest
@@ -15,12 +15,14 @@ namespace WordCounterLibraryTest
     {
       // Arrange
       var loggerMock = Substitute.For<ILogger<WordCounter>>();
+      var iOManagerMock = Substitute.For<IIOManager>();
       var lineManagerMock = Substitute.For<IWordsProcessor>();
       var reporterMock = Substitute.For<IReporter>();
 
-      var wordCounter = new WordCounter(loggerMock, lineManagerMock, reporterMock);
+      var wordCounter = new WordCounter(loggerMock, iOManagerMock, lineManagerMock, reporterMock);
 
       // Act
+      iOManagerMock.GetFilesInDirectory(Arg.Any<string>(), Arg.Any<string>()).Returns(Array.Empty<string>());
       await wordCounter.StartAsync("ANoneExistingDirectory", default);
 
       // Assert
@@ -29,22 +31,22 @@ namespace WordCounterLibraryTest
     }
 
     [Fact]
-    public async Task StartAsync_WhenFilesInDirectory_ThenProcessFiles() //TODO Will be fix when WordCounter is fixed
+    public async Task StartAsync_WhenFilesInDirectory_ThenProcessFiles()
     {
-      Assert.Fail("fix");
       // Arrange
       var loggerMock = Substitute.For<ILogger<WordCounter>>();
+      var iOManagerMock = Substitute.For<IIOManager>();
       var lineManagerMock = Substitute.For<IWordsProcessor>();
       var reporterMock = Substitute.For<IReporter>();
 
       lineManagerMock.ExecuteAsync(Arg.Any<ushort>(), Arg.Any<ushort>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>())
-          .Returns(Task.CompletedTask);
+          .Returns(ExecutionStatus.ExecutionCompleted);
 
-      var wordCounter = new WordCounter(loggerMock, lineManagerMock, reporterMock);
-      var pathWithFiles = LocationHelper.GetDirectory(@"Data\");
+      var wordCounter = new WordCounter(loggerMock, iOManagerMock, lineManagerMock, reporterMock);
 
       // Act
-      await wordCounter.StartAsync(pathWithFiles, default);
+      iOManagerMock.GetFilesInDirectory(Arg.Any<string>(), Arg.Any<string>()).Returns(new List<string> { @"c:\someexisting\path" }.ToArray());
+      await wordCounter.StartAsync("ExistingDirectory", default);
 
       // Assert
       await lineManagerMock.Received(1).ExecuteAsync(Arg.Any<ushort>(), Arg.Any<ushort>(), Arg.Any<string[]>(), Arg.Any<CancellationToken>());

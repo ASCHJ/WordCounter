@@ -1,8 +1,9 @@
 ﻿namespace WordCounterLibrary.Managers
 {
-  internal interface IIOManager
+  public interface IIOManager
   {
     bool Exists(string filePath);
     string CurrentDirectory { get; }
+    string[] GetFilesInDirectory(string directoryPath, string searchPattern);
   }
 }

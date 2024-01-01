@@ -17,5 +17,17 @@ namespace WordCounterLibrary.Managers
     {
       return File.Exists(filePath);
     }
+
+    public string[] GetFilesInDirectory(string directoryPath, string searchPattern)
+    {
+      if (Directory.Exists(directoryPath))
+      {
+        return Directory.GetFiles(directoryPath, searchPattern);
+      }
+      else
+      {
+        return Array.Empty<string>();
+      }
+    }
   }
 }
