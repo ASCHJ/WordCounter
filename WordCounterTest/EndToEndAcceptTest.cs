@@ -10,6 +10,8 @@ namespace WordCounterLibraryTest
     private readonly string _currentDirectory;
     private readonly string _folderWithTestFiles;
     private readonly IReadOnlyList<string> _expectedTestFiles;
+    private readonly IReadOnlyList<string> _expectedOutputFileNames;
+    private readonly string _expectedExcludeReportName;
 
     public EndToEndAcceptTest(ITestOutputHelper testOutputHelper)
     {
@@ -18,6 +20,17 @@ namespace WordCounterLibraryTest
       _currentDirectory = Directory.GetCurrentDirectory();
       _folderWithTestFiles = Path.Combine(_currentDirectory, "TestData");
       _expectedTestFiles = CreateExpectedTestFilesPaths(_folderWithTestFiles, new List<string> { "200.txt", "300.txt", "400.txt", "500.txt" });
+
+      _expectedOutputFileNames = new List<string>
+        {
+            "FILE_A.txt", "FILE_B.txt", "FILE_C.txt", "FILE_D.txt", "FILE_E.txt",
+            "FILE_F.txt", "FILE_G.txt", "FILE_H.txt", "FILE_I.txt", "FILE_J.txt",
+            "FILE_K.txt", "FILE_L.txt", "FILE_M.txt", "FILE_N.txt", "FILE_O.txt",
+            "FILE_P.txt", "FILE_Q.txt", "FILE_R.txt", "FILE_S.txt", "FILE_T.txt",
+            "FILE_U.txt", "FILE_V.txt", "FILE_W.txt", "FILE_X.txt", "FILE_Y.txt", "FILE_Z.txt"
+        };
+
+      _expectedExcludeReportName = "ExcludeReport.txt";
     }
 
     [Fact]
@@ -26,6 +39,7 @@ namespace WordCounterLibraryTest
       // Arrange
       // Check if preconditions are met
       EnsureTestFilesExist(_folderWithTestFiles, _expectedTestFiles);
+      DeleteGeneratedFiles(_expectedOutputFileNames, _expectedExcludeReportName);
       CopyTestDataToExcludeFile("exclude.test.txt", "exlude.txt");
 
       // Cli Argument
@@ -37,14 +51,6 @@ namespace WordCounterLibraryTest
       // Assert
       // Create a file for each letter in the alphabet
       // File format is FILE_<letter>.txt
-      var _expectedOutputFileNames = new List<string>
-        {
-            "FILE_A.txt", "FILE_B.txt", "FILE_C.txt", "FILE_D.txt", "FILE_E.txt",
-            "FILE_F.txt", "FILE_G.txt", "FILE_H.txt", "FILE_I.txt", "FILE_J.txt",
-            "FILE_K.txt", "FILE_L.txt", "FILE_M.txt", "FILE_N.txt", "FILE_O.txt",
-            "FILE_P.txt", "FILE_Q.txt", "FILE_R.txt", "FILE_S.txt", "FILE_T.txt",
-            "FILE_U.txt", "FILE_V.txt", "FILE_W.txt", "FILE_X.txt", "FILE_Y.txt", "FILE_Z.txt"
-        };
       ValidateExpectedFiles(_expectedOutputFileNames, "FILE_?.txt"); // FILE_<letter>.txt. Note "?" can be anything
 
       // Have a exlude file that contains the excluded words
@@ -53,7 +59,7 @@ namespace WordCounterLibraryTest
 
       // Assert file content for output files and exclude report matches expectations
       int wordCount = GetWordCountFromMatchingPattern(_expectedOutputFileNames,    @"\s{2}\w+\s(\d+)$"); // "  <WORD> <number>"
-      var wordExcludedCount = GetWordCountFromMatchingPattern("ExcludeReport.txt", @"^\w+\s(\d+)$");     // "<WORD> <number>"
+      var wordExcludedCount = GetWordCountFromMatchingPattern(_expectedExcludeReportName, @"^\w+\s(\d+)$");     // "<WORD> <number>"
       Assert.Equal((200 + 300 + 400 + 500), wordCount + wordExcludedCount);                              // Test file are named after how many words they contain (<number>.txt)
 
       // Assert case insensitive.
@@ -67,6 +73,15 @@ namespace WordCounterLibraryTest
 
       //Assert exit code
       Assert.Equal(0, exitCode);
+    }
+
+    private void DeleteGeneratedFiles(IEnumerable<string> outputFileNames, string expectedExcludeReportName)
+    {
+      foreach(var file in outputFileNames)
+      {
+        File.Delete(Path.Combine(_currentDirectory, file));
+      }
+      File.Delete(Path.Combine(_currentDirectory, expectedExcludeReportName));
     }
 
     private void ValidateWordIsInFile(string excludedWord, string filename)

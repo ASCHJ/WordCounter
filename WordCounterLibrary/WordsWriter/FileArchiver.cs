@@ -42,21 +42,15 @@ namespace WordCounterLibrary.WordsWriter
         _logger.LogInformation("Archiver '{id}' writting file '{filePathAndName}'.", id, outputFile);
 
         string content = string.Empty;
-        if (entry.Value.Any())
+        var outputFormat = _formatFactory.CreateFormat<WordAndCountFormat>();
+        foreach (var wordIndex in entry.Value)
         {
-          var outputFormat = _formatFactory.CreateFormat<WordAndCountFormat>();
-          foreach (var wordIndex in entry.Value)
-          {
-            var (word, count) = _wordRepository.ElementAtOrDefault(wordIndex);
-            outputFormat.AppendLine(word, count);
-          }
-
-          content = outputFormat.GetContent();
-          if(!string.IsNullOrEmpty(content))
-          {
-            _fileWriter.Write(outputFile, content);
-          }
+          var (word, count) = _wordRepository.ElementAtOrDefault(wordIndex);
+          outputFormat.AppendLine(word, count);
         }
+
+        content = outputFormat.GetContent();
+        _fileWriter.Write(outputFile, content);
         
         _logger.LogInformation("Archiver '{id}' done writting file '{filePathAndName}'.", id, outputFile);
       });

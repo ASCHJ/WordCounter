@@ -76,7 +76,7 @@ namespace WordCounterLibraryTest.WordsWriter
     }
 
     [Fact]
-    public void Archive_WhenIndexCardsContainsIndexButNoWord_ThenWriteToFileIsNotCalled()
+    public void Archive_WhenIndexCardsContainsIndexButNoWord_ThenWriteToFileIsStillCalled()
     {
       // Arrange
       var word = string.Empty;
@@ -96,7 +96,7 @@ namespace WordCounterLibraryTest.WordsWriter
       fileArchiver.Archive(indexCards);
 
       // Assert
-      fileWriter.DidNotReceive().Write(Arg.Any<string>(), Arg.Any<string>());
+      fileWriter.Received().Write(Arg.Any<string>(), Arg.Any<string>());
     }
 
     [Fact]
